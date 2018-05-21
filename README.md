@@ -39,6 +39,8 @@ To deploy and restart HAproxy:
 
     --deploy -d 'example.com' --deploy-hook haproxy
 
+**NOTE:** All of the above commands should be executed via Portainer's `Use custom command` option, or via `docker exec`. If you want to execute these commands from an interactive shell, prefix them with `acme.sh`.
+
 
 Assumptions
 ---
