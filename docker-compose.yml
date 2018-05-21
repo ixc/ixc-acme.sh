@@ -1,0 +1,64 @@
+version: '3.6'
+services:
+  acme:
+    command: daemon
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          memory: 50M
+        reservations:
+          cpus: '0.01'
+          memory: 50M
+    environment:
+      DEPLOY_HAPROXY_PEM_PATH: /haproxy
+      DEPLOY_HAPROXY_RELOAD: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock datagridsys/skopos-plugin-swarm-exec task-exec $$(docker service ps system_haproxy -f desired-state=running -q) /reload.sh
+      ME_Key:
+      ME_Secret:
+    hostname: '{{ .Service.Name }}-{{ .Task.Slot }}'
+    image: interaction/acme.sh
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - acme-data:/acme.sh
+      - nginx-data:/www
+      - system_haproxy-data:/haproxy
+  nginx:
+    deploy:
+      resources:
+        limits:
+          memory: 20M
+        reservations:
+          cpus: '0.01'
+          memory: 20M
+    healthcheck:
+      test: curl -f http://localhost || exit 1
+    hostname: '{{ .Service.Name }}-{{ .Task.Slot }}'
+    image: interaction/acme.sh-nginx
+    ports:
+      - 80:80
+    volumes:
+      - nginx-data:/www
+volumes:
+  acme-data:
+    driver: cloudstor:aws
+    driver_opts:
+      perfmode: maxio
+    name: 'acme-data'
+  nginx-data:
+    driver: cloudstor:aws
+    driver_opts:
+      perfmode: maxio
+    name: 'nginx-data'
+  system_haproxy-data:
+    external: true
+
+# ME_Key=
+# ME_Secret=
+
+# --issue -d 'example.com' -d '*.example.com' --dns dns_me --dnssleep 15 # For domains hosted with DNS Made Easy
+# --issue -d 'example.com' -d '*.example.com' --challenge-alias ixchosted.com --dns dns_me --dnssleep 15  # For domains hosted elsewhere, with an `_acme-challenge` CNAME pointing at `_acme-challenge.ixchosted.com`
+# --issue -d 'example.com' -d '*.example.com' --domain-alias acme-challenge.ixchosted.com --dns dns_me --dnssleep 15  # For domains hosted elsewhere, with an `_acme-challenge` CNAME pointing at `acme-challenge.ixchosted.com` (because they don't allow hostnames with a leading underscore)
+# --issue -d 'example.com' -d 'foo.example.com' -w /www  # For domains that cannot use DNS-01 challenge
+# --deploy -d 'example.com' --deploy-hook haproxy

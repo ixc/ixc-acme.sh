@@ -1,0 +1,19 @@
+version: '3.6'
+services:
+  acme:
+    build:
+      context: .
+      dockerfile: Dockerfile.acme
+    image: interaction/acme.sh:local
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    image: interaction/acme.sh-nginx:local
+volumes:
+  acme-data:
+    driver: local
+    driver_opts: {}
+  nginx-data:
+    driver: local
+    driver_opts: {}

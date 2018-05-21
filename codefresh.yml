@@ -1,0 +1,54 @@
+version: '1.0'
+steps:
+
+  # acme.sh
+  build_acme:
+    type: build
+    title: Building Docker Image
+    image_name: interaction/acme.sh
+    dockerfile: Dockerfile.acme
+  push_acme_branch_tag:
+    title: Pushing Docker Image to Registry (branch tag)
+    candidate: '${{build_acme}}'
+    tag: '${{CF_BRANCH_TAG_NORMALIZED}}'
+    type: push
+  push_acme_commit_tag:
+    title: Pushing Docker Image to Registry (commit tag)
+    candidate: '${{build_acme}}'
+    tag: '${{CF_REVISION}}'
+    type: push
+  push_acme_latest_tag:
+    title: Pushing Docker Image to Registry (latest tag)
+    candidate: '${{build_acme}}'
+    tag: latest
+    type: push
+    when:
+      branch:
+        only:
+          - master
+
+  # acme.sh-nginx
+  build_nginx:
+    type: build
+    title: Building Docker Image
+    image_name: interaction/acme.sh-nginx
+    dockerfile: Dockerfile.nginx
+  push_nginx_branch_tag:
+    title: Pushing Docker Image to Registry (branch tag)
+    candidate: '${{build_nginx}}'
+    tag: '${{CF_BRANCH_TAG_NORMALIZED}}'
+    type: push
+  push_nginx_commit_tag:
+    title: Pushing Docker Image to Registry (commit tag)
+    candidate: '${{build_nginx}}'
+    tag: '${{CF_REVISION}}'
+    type: push
+  push_nginx_latest_tag:
+    title: Pushing Docker Image to Registry (latest tag)
+    candidate: '${{build_nginx}}'
+    tag: latest
+    type: push
+    when:
+      branch:
+        only:
+          - master
