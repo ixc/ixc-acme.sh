@@ -7,8 +7,6 @@ services:
         constraints:
           - node.role == manager
       resources:
-        limits:
-          memory: 50M
         reservations:
           cpus: '0.01'
           memory: 50M
@@ -27,8 +25,6 @@ services:
   nginx:
     deploy:
       resources:
-        limits:
-          memory: 20M
         reservations:
           cpus: '0.01'
           memory: 20M
