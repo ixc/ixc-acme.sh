@@ -19,6 +19,10 @@ Usage
 
 Certificates are initially issued via one-time `exec` commands on the `acme` service. Then they are deployed via another one-time `exec` command. They are renewed automatically.
 
+For domains that cannot use DNS-01 challenge:
+
+    --issue -d 'example.com' -d 'foo.example.com' -w /www
+
 For domains hosted with DNS Made Easy:
 
     --issue -d 'example.com' -d '*.example.com' --dns dns_me --dnssleep 15
@@ -27,13 +31,9 @@ For domains hosted elsewhere, with an `_acme-challenge` CNAME pointing at `_acme
 
     --issue -d 'example.com' -d '*.example.com' --challenge-alias ixchosted.com --dns dns_me --dnssleep 15
 
-For domains hosted elsewhere, with an `_acme-challenge` CNAME pointing at `acme-challenge.ixchosted.com` (because they don't allow hostnames with a leading underscore):
+For domains hosted elsewhere, with an `_acme-challenge` CNAME pointing at `FOO.ixchosted.com` (e.g. because they don't allow hostnames with a leading underscore):
 
-    --issue -d 'example.com' -d '*.example.com' --domain-alias acme-challenge.ixchosted.com --dns dns_me --dnssleep 15
-
-For domains that cannot use DNS-01 challenge:
-
-    --issue -d 'example.com' -d 'foo.example.com' -w /www
+    --issue -d 'example.com' -d '*.example.com' --domain-alias FOO.ixchosted.com --dns dns_me --dnssleep 15
 
 To deploy and restart HAproxy:
 
