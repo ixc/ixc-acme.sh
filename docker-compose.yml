@@ -12,7 +12,7 @@ services:
           memory: 50M
     environment:
       DEPLOY_HAPROXY_PEM_PATH: /haproxy
-      DEPLOY_HAPROXY_RELOAD: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock datagridsys/skopos-plugin-swarm-exec task-exec $$(docker service ps system_haproxy -f desired-state=running -q) /reload.sh
+      DEPLOY_HAPROXY_RELOAD: for task in $$(docker service ps system_haproxy -f desired-state=running -q); do docker run --rm -v /var/run/docker.sock:/var/run/docker.sock datagridsys/skopos-plugin-swarm-exec task-exec $$task /reload.sh; done
       ME_Key:
       ME_Secret:
     hostname: '{{ .Service.Name }}-{{ .Task.Slot }}'
